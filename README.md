@@ -21,6 +21,18 @@ reading.
 - Works with `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs`, `.cjs`, including from the
   Editor context menu, Explorer context menu, and the Command Palette.
 
+## Try it in the browser
+
+A demo file is checked in at `demo/index.html`: open it directly in any
+browser (double-click it, or `File > Open File…`).
+It reuses the exact same renderer (`media/main.js`, `media/main.css`) and the
+analyzer output for `samples/ai_generated_report.ts`, so what you see is what
+the extension draws inside VS Code:
+
+```bash
+open demo/index.html   # macOS
+```
+
 ## Why
 
 Coding agents generate a lot of plausible-looking code. Before trusting it, you

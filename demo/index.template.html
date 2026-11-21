@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Atlas — Browser Demo</title>
+  <style>
+    body {
+      margin: 0;
+      background: var(--vscode-editor-background);
+    }
+    #demo-banner {
+      padding: 8px 14px;
+      background: var(--vscode-editorWidget-background);
+      border-bottom: 1px solid var(--vscode-panel-border);
+      color: var(--vscode-descriptionForeground);
+      font-family: var(--vscode-font-family);
+      font-size: 12px;
+    }
+    #demo-banner b {
+      color: var(--vscode-editor-foreground);
+    }
+  </style>
+  <style>
+    :root {
+      --vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Ubuntu, sans-serif;
+      --vscode-editor-font-family: Menlo, Monaco, "Courier New", monospace;
+      --vscode-editor-background: #1e1e1e;
+      --vscode-editor-foreground: #d4d4d4;
+      --vscode-descriptionForeground: #9d9d9d;
+      --vscode-panel-border: rgba(128, 128, 128, 0.35);
+      --vscode-editorWidget-background: #252526;
+      --vscode-textCodeBlock-background: #1b1b1b;
+      --vscode-textLink-foreground: #4daafc;
+      --vscode-list-hoverBackground: rgba(75, 156, 255, 0.15);
+      --vscode-button-foreground: #ffffff;
+      --vscode-button-background: #0e639c;
+      --vscode-button-hoverBackground: #1177bb;
+      --vscode-charts-blue: #4fc1ff;
+      --vscode-charts-purple: #c586c0;
+      --vscode-charts-green: #89d185;
+      --vscode-charts-orange: #d18616;
+    }
+  </style>
+  <link href="../media/main.css" rel="stylesheet">
+</head>
+<body>
+  <div id="demo-banner"><b>Code Atlas</b> — static browser demo of the VS Code webview. Click nodes to inspect; double-click is disabled here (Reveal works only inside VS Code).</div>
+  <div id="app">
+    <aside id="detail" aria-label="Function details">
+      <div id="detail-empty">Select a node in the diagram to inspect it.</div>
+      <div id="detail-body" class="hidden">
+        <h2 id="detail-name"></h2>
+        <div id="detail-meta"></div>
+        <div id="detail-params"></div>
+        <section id="detail-doc-section"><h3>Documentation</h3><pre id="detail-doc"></pre></section>
+        <section id="detail-calls-section"><h3>Calls</h3><ul id="detail-calls"></ul></section>
+        <button id="reveal">Reveal in code &rarr;</button>
+      </div>
+    </aside>
+    <main id="canvas">
+      <header id="stats"></header>
+      <div id="viewport" tabindex="0"></div>
+    </main>
+  </div>
+  <script>
+    window.__ATLAS_GRAPH = __GRAPH_JSON__;
+    window.acquireVsCodeApi = function () {
+      return {
+        postMessage: function (message) {
+          console.log('[demo] postMessage:', message.type, message.id || '');
+        },
+        getState: function () { return {}; },
+        setState: function () { /* no-op */ }
+      };
+    };
+    window.addEventListener('load', function () {
+      window.dispatchEvent(new MessageEvent('message', { data: { type: 'graph', graph: window.__ATLAS_GRAPH } }));
+    });
+  </script>
+  <script src="../media/main.js"></script>
+</body>
+</html>
