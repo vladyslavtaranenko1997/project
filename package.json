@@ -1,0 +1,91 @@
+{
+  "name": "code-atlas",
+  "displayName": "Code Atlas — Code Diagrams",
+  "description": "Visualize the functions of the active file as an interactive call-graph diagram, so you can quickly understand what generated or unfamiliar code does.",
+  "version": "0.1.0",
+  "publisher": "code-atlas",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Visualization"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "code-atlas.showDiagram",
+        "title": "Code Atlas: Show Diagram of Active File",
+        "category": "Code Atlas"
+      },
+      {
+        "command": "code-atlas.copyMermaid",
+        "title": "Code Atlas: Copy Diagram as Mermaid",
+        "category": "Code Atlas"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "code-atlas.showDiagram",
+          "when": "editorTextFocus && resourceLangId =~ /(typescript|javascript)/",
+          "group": "z_commands"
+        },
+        {
+          "command": "code-atlas.copyMermaid",
+          "when": "editorTextFocus && resourceLangId =~ /(typescript|javascript)/",
+          "group": "z_commands"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "code-atlas.showDiagram",
+          "when": "resourceLangId =~ /(typescript|javascript)/",
+          "group": "z_commands"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Code Atlas",
+      "properties": {
+        "code-atlas.layoutDirection": {
+          "type": "string",
+          "default": "LR",
+          "enum": [
+            "LR",
+            "TB"
+          ],
+          "enumDescriptions": [
+            "Left to right",
+            "Top to bottom"
+          ],
+          "description": "Direction of the generated diagram."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "npm run check-types && node esbuild.js --production",
+    "check-types": "tsc --noEmit",
+    "test": "node scripts/selftest.mjs",
+    "pretest": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "20.x",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.5.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0"
+  }
+}

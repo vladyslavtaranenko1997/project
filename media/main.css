@@ -1,0 +1,228 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--vscode-editor-foreground);
+  background: var(--vscode-editor-background);
+  font-family: var(--vscode-font-family);
+  font-size: 13px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#app {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  height: 100vh;
+}
+
+#detail {
+  border-right: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.3));
+  padding: 14px;
+  overflow-y: auto;
+}
+
+#detail-empty {
+  color: var(--vscode-descriptionForeground);
+  padding-top: 8px;
+}
+
+#detail-name {
+  font-size: 14px;
+  font-family: var(--vscode-editor-font-family);
+  margin: 0 0 10px;
+  word-break: break-word;
+}
+
+#detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+#detail-params {
+  font-family: var(--vscode-editor-font-family);
+  color: var(--vscode-descriptionForeground);
+  margin-bottom: 12px;
+  word-break: break-word;
+}
+
+.chip {
+  display: inline-block;
+  border: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.3));
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.chip.kind {
+  color: var(--vscode-charts-blue, #4fc1ff);
+  border-color: currentColor;
+}
+
+#detail h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--vscode-descriptionForeground);
+  margin: 16px 0 6px;
+}
+
+#detail-doc {
+  font-family: var(--vscode-editor-font-family);
+  white-space: pre-wrap;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--vscode-textCodeBlock-background);
+}
+
+#detail-calls {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#detail-calls li {
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-family: var(--vscode-editor-font-family);
+}
+
+#detail-calls li.link {
+  cursor: pointer;
+  color: var(--vscode-textLink-foreground);
+}
+
+#detail-calls li.link:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+#reveal {
+  margin-top: 16px;
+  width: 100%;
+  padding: 6px 10px;
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+#reveal:hover {
+  background: var(--vscode-button-hoverBackground);
+}
+
+#canvas {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+#stats {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.3));
+  color: var(--vscode-descriptionForeground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#viewport {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  outline: none;
+}
+
+svg .node rect {
+  fill: var(--vscode-editorWidget-background, #252526);
+  stroke: var(--vscode-panel-border, rgba(128, 128, 128, 0.4));
+  stroke-width: 1.4;
+  transition: stroke 0.1s ease;
+}
+
+svg .node.kind-function rect {
+  stroke: var(--vscode-charts-blue, #4fc1ff);
+}
+
+svg .node.kind-method rect {
+  stroke: var(--vscode-charts-purple, #c586c0);
+}
+
+svg .node.kind-arrow rect {
+  stroke: var(--vscode-charts-green, #89d185);
+}
+
+svg .node.kind-function-expression rect {
+  stroke: var(--vscode-charts-green, #89d185);
+}
+
+svg .node.kind-constructor rect {
+  stroke: var(--vscode-charts-orange, #d18616);
+}
+
+svg .node:hover rect {
+  stroke-width: 2.4;
+  filter: brightness(1.15);
+}
+
+svg .node.selected rect {
+  stroke-width: 2.6;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+svg .node-name {
+  fill: var(--vscode-editor-foreground);
+  font-family: var(--vscode-editor-font-family);
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+svg .node-sub {
+  fill: var(--vscode-descriptionForeground);
+  font-family: var(--vscode-editor-font-family);
+  font-size: 10px;
+  pointer-events: none;
+}
+
+svg .edge {
+  fill: none;
+  stroke: var(--vscode-editor-foreground);
+  stroke-opacity: 0.35;
+  stroke-width: 1.4;
+}
+
+svg .edge.active {
+  stroke: var(--vscode-charts-blue, #4fc1ff);
+  stroke-opacity: 1;
+  stroke-width: 2;
+}
+
+svg .edge.self {
+  stroke-dasharray: 4 3;
+}
+
+svg .arrow-head {
+  fill: var(--vscode-editor-foreground);
+  fill-opacity: 0.5;
+}
+
+svg .edge.active + .arrow-head {
+  fill: var(--vscode-charts-blue, #4fc1ff);
+}
