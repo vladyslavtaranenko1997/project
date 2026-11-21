@@ -23,14 +23,14 @@ reading.
 
 ## Try it in the browser
 
-A demo file is checked in at `demo/index.html`: open it directly in any
+A demo file is checked in at `docs/index.html`: open it directly in any
 browser (double-click it, or `File > Open File…`).
 It reuses the exact same renderer (`media/main.js`, `media/main.css`) and the
 analyzer output for `samples/ai_generated_report.ts`, so what you see is what
 the extension draws inside VS Code:
 
 ```bash
-open demo/index.html   # macOS
+open docs/index.html   # macOS
 ```
 
 ## Why

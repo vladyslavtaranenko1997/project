@@ -79,7 +79,8 @@
     "package": "npm run check-types && node esbuild.js --production",
     "check-types": "tsc --noEmit",
     "test": "node scripts/selftest.mjs",
-    "pretest": "npm run compile"
+    "pretest": "npm run compile",
+    "build-demo": "node scripts/build-demo.mjs"
   },
   "devDependencies": {
     "@types/node": "20.x",

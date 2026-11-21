@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Atlas — Browser Demo</title>
+  <style>
+    body {
+      margin: 0;
+      background: var(--vscode-editor-background);
+    }
+    #demo-banner {
+      padding: 8px 14px;
+      background: var(--vscode-editorWidget-background);
+      border-bottom: 1px solid var(--vscode-panel-border);
+      color: var(--vscode-descriptionForeground);
+      font-family: var(--vscode-font-family);
+      font-size: 12px;
+    }
+    #demo-banner b {
+      color: var(--vscode-editor-foreground);
+    }
+  </style>
+  <style>
+    :root {
+      --vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Ubuntu, sans-serif;
+      --vscode-editor-font-family: Menlo, Monaco, "Courier New", monospace;
+      --vscode-editor-background: #1e1e1e;
+      --vscode-editor-foreground: #d4d4d4;
+      --vscode-descriptionForeground: #9d9d9d;
+      --vscode-panel-border: rgba(128, 128, 128, 0.35);
+      --vscode-editorWidget-background: #252526;
+      --vscode-textCodeBlock-background: #1b1b1b;
+      --vscode-textLink-foreground: #4daafc;
+      --vscode-list-hoverBackground: rgba(75, 156, 255, 0.15);
+      --vscode-button-foreground: #ffffff;
+      --vscode-button-background: #0e639c;
+      --vscode-button-hoverBackground: #1177bb;
+      --vscode-charts-blue: #4fc1ff;
+      --vscode-charts-purple: #c586c0;
+      --vscode-charts-green: #89d185;
+      --vscode-charts-orange: #d18616;
+    }
+  </style>
+  <style>
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--vscode-editor-foreground);
+  background: var(--vscode-editor-background);
+  font-family: var(--vscode-font-family);
+  font-size: 13px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#app {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  height: 100vh;
+}
+
+#detail {
+  border-right: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.3));
+  padding: 14px;
+  overflow-y: auto;
+}
+
+#detail-empty {
+  color: var(--vscode-descriptionForeground);
+  padding-top: 8px;
+}
+
+#detail-name {
+  font-size: 14px;
+  font-family: var(--vscode-editor-font-family);
+  margin: 0 0 10px;
+  word-break: break-word;
+}
+
+#detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+#detail-params {
+  font-family: var(--vscode-editor-font-family);
+  color: var(--vscode-descriptionForeground);
+  margin-bottom: 12px;
+  word-break: break-word;
+}
+
+.chip {
+  display: inline-block;
+  border: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.3));
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.chip.kind {
+  color: var(--vscode-charts-blue, #4fc1ff);
+  border-color: currentColor;
+}
+
+#detail h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--vscode-descriptionForeground);
+  margin: 16px 0 6px;
+}
+
+#detail-doc {
+  font-family: var(--vscode-editor-font-family);
+  white-space: pre-wrap;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--vscode-textCodeBlock-background);
+}
+
+#detail-calls {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#detail-calls li {
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-family: var(--vscode-editor-font-family);
+}
+
+#detail-calls li.link {
+  cursor: pointer;
+  color: var(--vscode-textLink-foreground);
+}
+
+#detail-calls li.link:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+#reveal {
+  margin-top: 16px;
+  width: 100%;
+  padding: 6px 10px;
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+#reveal:hover {
+  background: var(--vscode-button-hoverBackground);
+}
+
+#canvas {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+#stats {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.3));
+  color: var(--vscode-descriptionForeground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#viewport {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  outline: none;
+}
+
+svg .node rect {
+  fill: var(--vscode-editorWidget-background, #252526);
+  stroke: var(--vscode-panel-border, rgba(128, 128, 128, 0.4));
+  stroke-width: 1.4;
+  transition: stroke 0.1s ease;
+}
+
+svg .node.kind-function rect {
+  stroke: var(--vscode-charts-blue, #4fc1ff);
+}
+
+svg .node.kind-method rect {
+  stroke: var(--vscode-charts-purple, #c586c0);
+}
+
+svg .node.kind-arrow rect {
+  stroke: var(--vscode-charts-green, #89d185);
+}
+
+svg .node.kind-function-expression rect {
+  stroke: var(--vscode-charts-green, #89d185);
+}
+
+svg .node.kind-constructor rect {
+  stroke: var(--vscode-charts-orange, #d18616);
+}
+
+svg .node:hover rect {
+  stroke-width: 2.4;
+  filter: brightness(1.15);
+}
+
+svg .node.selected rect {
+  stroke-width: 2.6;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+svg .node-name {
+  fill: var(--vscode-editor-foreground);
+  font-family: var(--vscode-editor-font-family);
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+svg .node-sub {
+  fill: var(--vscode-descriptionForeground);
+  font-family: var(--vscode-editor-font-family);
+  font-size: 10px;
+  pointer-events: none;
+}
+
+svg .edge {
+  fill: none;
+  stroke: var(--vscode-editor-foreground);
+  stroke-opacity: 0.35;
+  stroke-width: 1.4;
+}
+
+svg .edge.active {
+  stroke: var(--vscode-charts-blue, #4fc1ff);
+  stroke-opacity: 1;
+  stroke-width: 2;
+}
+
+svg .edge.self {
+  stroke-dasharray: 4 3;
+}
+
+svg .arrow-head {
+  fill: var(--vscode-editor-foreground);
+  fill-opacity: 0.5;
+}
+
+svg .edge.active + .arrow-head {
+  fill: var(--vscode-charts-blue, #4fc1ff);
+}
+
+  </style>
+</head>
+<body>
+  <div id="demo-banner"><b>Code Atlas</b> — static browser demo of the VS Code webview. Click nodes to inspect; double-click is disabled here (Reveal works only inside VS Code).</div>
+  <div id="app">
+    <aside id="detail" aria-label="Function details">
+      <div id="detail-empty">Select a node in the diagram to inspect it.</div>
+      <div id="detail-body" class="hidden">
+        <h2 id="detail-name"></h2>
+        <div id="detail-meta"></div>
+        <div id="detail-params"></div>
+        <section id="detail-doc-section"><h3>Documentation</h3><pre id="detail-doc"></pre></section>
+        <section id="detail-calls-section"><h3>Calls</h3><ul id="detail-calls"></ul></section>
+        <button id="reveal">Reveal in code &rarr;</button>
+      </div>
+    </aside>
+    <main id="canvas">
+      <header id="stats"></header>
+      <div id="viewport" tabindex="0"></div>
+    </main>
+  </div>
+  <script>
+    window.__ATLAS_GRAPH = {"file":"ai_generated_report.ts","nodes":[{"id":"n0","name":"generateReport","kind":"function","params":"userIds: string[]","doc":"","line":8,"endLine":21,"complexity":3,"callsExternal":["Promise.all","userIds.map","fetchUser","users.filter","active.map","logger.info","logger.warn"]},{"id":"n1","name":"formatRow","kind":"function","params":"user: User","doc":"","line":23,"endLine":27,"complexity":3,"callsExternal":["user.name.trim","name.padEnd"]},{"id":"n2","name":"summarize","kind":"function","params":"rows: string[]","doc":"","line":29,"endLine":39,"complexity":6,"callsExternal":["row.includes"]},{"id":"n3","name":"addStep","kind":"method","container":"Pipeline","params":"step: (input: string) => string","doc":"","line":44,"endLine":47,"complexity":1,"callsExternal":["this.steps.push"]},{"id":"n4","name":"run","kind":"method","container":"Pipeline","params":"input: string","doc":"","line":49,"endLine":51,"complexity":1,"callsExternal":["this.steps.reduce","step"]},{"id":"n5","name":"runDefault","kind":"function","params":"input: string","doc":"","line":58,"endLine":60,"complexity":1,"callsExternal":["defaultPipeline.run"]}],"edges":[{"from":"n0","to":"n1"},{"from":"n0","to":"n2"},{"from":"n0","to":"n5"}],"externals":["Promise.all","userIds.map","fetchUser","users.filter","active.map","logger.info","logger.warn","user.name.trim","name.padEnd","row.includes","this.steps.push","this.steps.reduce","step","defaultPipeline.run"]};
+    window.acquireVsCodeApi = function () {
+      return {
+        postMessage: function (message) {
+          console.log('[demo] postMessage:', message.type, message.id || '');
+        },
+        getState: function () { return {}; },
+        setState: function () { /* no-op */ }
+      };
+    };
+    window.addEventListener('load', function () {
+      window.dispatchEvent(new MessageEvent('message', { data: { type: 'graph', graph: window.__ATLAS_GRAPH } }));
+    });
+  </script>
+  <script>
+(function () {
+  'use strict';
+
+  const vscode = acquireVsCodeApi();
+
+  const NODE_W = 190;
+  const NODE_H = 44;
+  const H_GAP = 90;
+  const V_GAP = 18;
+  const PADDING = 30;
+
+  const state = {
+    graph: null,
+    selected: null,
+    scale: 1,
+  };
+
+  const viewport = document.getElementById('viewport');
+  const stats = document.getElementById('stats');
+  const detailEmpty = document.getElementById('detail-empty');
+  const detailBody = document.getElementById('detail-body');
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  window.addEventListener('message', (event) => {
+    const message = event.data;
+    if (message && message.type === 'graph' && message.graph) {
+      state.graph = message.graph;
+      state.selected = null;
+      render();
+    }
+  });
+
+  function nodesById() {
+    const map = new Map();
+    state.graph.nodes.forEach((node) => map.set(node.id, node));
+    return map;
+  }
+
+  function adjacency() {
+    const out = new Map();
+    const inMap = new Map();
+    state.graph.nodes.forEach((node) => {
+      out.set(node.id, []);
+      inMap.set(node.id, []);
+    });
+    state.graph.edges.forEach((edge) => {
+      if (out.has(edge.from) && inMap.has(edge.to)) {
+        out.get(edge.from).push(edge.to);
+        inMap.get(edge.to).push(edge.from);
+      }
+    });
+    return { out, inMap };
+  }
+
+  function computeLevels() {
+    const { out } = adjacency();
+    const levels = new Map();
+    const visiting = new Set();
+
+    const levelOf = (id) => {
+      if (levels.has(id)) {
+        return levels.get(id);
+      }
+      if (visiting.has(id)) {
+        return 0;
+      }
+      visiting.add(id);
+      let level = 0;
+      const targets = out.get(id) || [];
+      targets.forEach((target) => {
+        level = Math.max(level, levelOf(target) + 1);
+      });
+      visiting.delete(id);
+      levels.set(id, level);
+      return level;
+    };
+
+    state.graph.nodes.forEach((node) => levelOf(node.id));
+    return levels;
+  }
+
+  function layout() {
+    const levels = computeLevels();
+    const columns = [];
+    state.graph.nodes.forEach((node) => {
+      const level = levels.get(node.id) || 0;
+      if (!columns[level]) {
+        columns[level] = [];
+      }
+      columns[level].push(node);
+    });
+
+    const columnHeights = columns.map((column) => column.length * (NODE_H + V_GAP) - V_GAP);
+    const totalHeight = Math.max(PADDING * 2, Math.max(...columnHeights) + PADDING * 2);
+    const totalWidth = Math.max(PADDING * 2, columns.length * (NODE_W + H_GAP) - H_GAP + PADDING * 2);
+
+    const positions = new Map();
+    columns.forEach((column, index) => {
+      const columnHeight = columnHeights[index];
+      const startY = (totalHeight - columnHeight) / 2;
+      column.forEach((node, row) => {
+        positions.set(node.id, {
+          x: PADDING + index * (NODE_W + H_GAP),
+          y: startY + row * (NODE_H + V_GAP),
+        });
+      });
+    });
+
+    return { positions, totalWidth, totalHeight };
+  }
+
+  function edgePath(from, to) {
+    const x1 = from.x + NODE_W;
+    const y1 = from.y + NODE_H / 2;
+    const x2 = to.x;
+    const y2 = to.y + NODE_H / 2;
+
+    if (from === to) {
+      const loopY = from.y - 14;
+      return {
+        d: `M ${x1} ${y1} C ${x1 + H_GAP / 2} ${y1}, ${x1 + H_GAP / 2} ${loopY}, ${x1 - NODE_W / 3} ${loopY} ` +
+           `C ${x2 + NODE_W / 6} ${loopY}, ${x2 - H_GAP / 2} ${y2 - 10}, ${x2} ${y2}`,
+        selfLoop: true,
+      };
+    }
+
+    const midX = (x1 + x2) / 2;
+    return {
+      d: `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`,
+      selfLoop: false,
+    };
+  }
+
+  function nodeLabel(node) {
+    return node.container ? node.container + '.' + node.name : node.name;
+  }
+
+  function render() {
+    viewport.innerHTML = '';
+    if (!state.graph || state.graph.nodes.length === 0) {
+      stats.textContent = '';
+      return;
+    }
+
+    const { positions, totalWidth, totalHeight } = layout();
+    const byId = nodesById();
+
+    stats.textContent = state.graph.file + ' — ' +
+      state.graph.nodes.length + ' functions · ' +
+      state.graph.edges.length + ' internal calls · ' +
+      'avg complexity ' + averageComplexity();
+
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('width', Math.round(totalWidth * state.scale));
+    svg.setAttribute('height', Math.round(totalHeight * state.scale));
+    svg.setAttribute('data-size', totalWidth + 'x' + totalHeight);
+
+    const wrapper = document.createElementNS(SVG_NS, 'g');
+    wrapper.setAttribute('transform', 'scale(' + state.scale + ')');
+
+    const edgesGroup = document.createElementNS(SVG_NS, 'g');
+    edgesGroup.setAttribute('class', 'edges');
+
+    state.graph.edges.forEach((edge, index) => {
+      const from = positions.get(edge.from);
+      const to = positions.get(edge.to);
+      if (!from || !to) {
+        return;
+      }
+      const path = document.createElementNS(SVG_NS, 'path');
+      const geometry = edgePath(from, to);
+      const isSelfLoop = from === to;
+      path.setAttribute('d', geometry.d);
+      path.setAttribute('class', isSelfLoop ? 'edge self' : 'edge');
+      path.setAttribute('marker-end', 'url(#arrow)');
+      path.setAttribute('data-edge', index);
+      path.setAttribute('data-from', edge.from);
+      path.setAttribute('data-to', edge.to);
+      edgesGroup.appendChild(path);
+    });
+
+    const nodesGroup = document.createElementNS(SVG_NS, 'g');
+    nodesGroup.setAttribute('class', 'nodes');
+
+    state.graph.nodes.forEach((node) => {
+      const position = positions.get(node.id);
+      if (!position) {
+        return;
+      }
+      const group = document.createElementNS(SVG_NS, 'g');
+      group.setAttribute('class', 'node kind-' + node.kind);
+      group.setAttribute('data-id', node.id);
+      group.setAttribute('transform', 'translate(' + position.x + ',' + position.y + ')');
+      group.setAttribute('tabindex', '0');
+
+      const rect = document.createElementNS(SVG_NS, 'rect');
+      rect.setAttribute('x', '0');
+      rect.setAttribute('y', '0');
+      rect.setAttribute('rx', '8');
+      rect.setAttribute('width', NODE_W);
+      rect.setAttribute('height', NODE_H);
+
+      const label = document.createElementNS(SVG_NS, 'text');
+      label.setAttribute('class', 'node-name');
+      label.setAttribute('x', '12');
+      label.setAttribute('y', '19');
+      label.textContent = truncate(nodeLabel(node), 24);
+
+      const sub = document.createElementNS(SVG_NS, 'text');
+      sub.setAttribute('class', 'node-sub');
+      sub.setAttribute('x', '12');
+      sub.setAttribute('y', '34');
+      sub.textContent = node.kind + ' · cx ' + node.complexity + ' · L' + (node.line + 1);
+
+      const title = document.createElementNS(SVG_NS, 'title');
+      title.textContent = nodeLabel(node) + '(' + node.params + ') — line ' + (node.line + 1);
+
+      group.appendChild(rect);
+      group.appendChild(label);
+      group.appendChild(sub);
+      group.appendChild(title);
+      nodesGroup.appendChild(group);
+    });
+
+    const defs = document.createElementNS(SVG_NS, 'defs');
+    defs.innerHTML =
+      '<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">' +
+      '<path d="M 0 0 L 10 5 L 0 10 z" class="arrow-head"></path></marker>';
+
+    wrapper.appendChild(defs);
+    wrapper.appendChild(edgesGroup);
+    wrapper.appendChild(nodesGroup);
+    svg.appendChild(wrapper);
+    viewport.appendChild(svg);
+
+    applySelection();
+  }
+
+  function averageComplexity() {
+    const nodes = state.graph.nodes;
+    const sum = nodes.reduce((acc, node) => acc + node.complexity, 0);
+    return (sum / nodes.length).toFixed(1);
+  }
+
+  function truncate(text, max) {
+    return text.length > max ? text.slice(0, max - 1) + '…' : text;
+  }
+
+  function applySelection() {
+    const selected = state.selected;
+    viewport.querySelectorAll('.node').forEach((element) => {
+      element.classList.toggle('selected', !!selected && element.getAttribute('data-id') === selected);
+    });
+    viewport.querySelectorAll('.edge').forEach((element) => {
+      const active = !!selected &&
+        (element.getAttribute('data-from') === selected || element.getAttribute('data-to') === selected);
+      element.classList.toggle('active', active);
+    });
+  }
+
+  function selectNode(id, revealInCode) {
+    state.selected = id;
+    applySelection();
+    showDetail(id);
+    if (revealInCode) {
+      vscode.postMessage({ type: 'select', id: id });
+    }
+  }
+
+  function showDetail(id) {
+    const node = state.graph.nodes.find((candidate) => candidate.id === id);
+    if (!node) {
+      return;
+    }
+    detailEmpty.classList.add('hidden');
+    detailBody.classList.remove('hidden');
+
+    document.getElementById('detail-name').textContent = nodeLabel(node) + '(' + node.params + ')';
+    document.getElementById('detail-meta').innerHTML =
+      '<span class="chip kind">' + node.kind + '</span>' +
+      '<span class="chip">lines ' + (node.line + 1) + '–' + (node.endLine + 1) + '</span>' +
+      '<span class="chip">complexity ' + node.complexity + '</span>';
+
+    const docSection = document.getElementById('detail-doc-section');
+    const docText = document.getElementById('detail-doc');
+    if (node.doc) {
+      docText.textContent = node.doc;
+      docSection.classList.remove('hidden');
+    } else {
+      docText.textContent = '';
+      docSection.classList.add('hidden');
+    }
+
+    const callsSection = document.getElementById('detail-calls-section');
+    const callsList = document.getElementById('detail-calls');
+    callsList.innerHTML = '';
+    const calledLocally = state.graph.edges
+      .filter((edge) => edge.from === id)
+      .map((edge) => state.graph.nodes.find((candidate) => candidate.id === edge.to))
+      .filter(Boolean);
+    const callers = state.graph.edges
+      .filter((edge) => edge.to === id)
+      .map((edge) => state.graph.nodes.find((candidate) => candidate.id === edge.from))
+      .filter(Boolean);
+
+    calledLocally.forEach((target) => {
+      callsList.appendChild(listItem('→ ' + nodeLabel(target), target.id));
+    });
+    callers.forEach((caller) => {
+      callsList.appendChild(listItem('← ' + nodeLabel(caller), caller.id));
+    });
+    node.callsExternal.forEach((external) => {
+      callsList.appendChild(listItem('⤴ ' + external + ' (external)', null));
+    });
+
+    if (calledLocally.length === 0 && callers.length === 0 && node.callsExternal.length === 0) {
+      callsSection.classList.add('hidden');
+    } else {
+      callsSection.classList.remove('hidden');
+    }
+  }
+
+  function listItem(text, nodeId) {
+    const li = document.createElement('li');
+    li.textContent = text;
+    if (nodeId) {
+      li.classList.add('link');
+      li.addEventListener('click', () => selectNode(nodeId, false));
+    }
+    return li;
+  }
+
+  viewport.addEventListener('click', (event) => {
+    const target = event.target.closest('.node');
+    if (target) {
+      selectNode(target.getAttribute('data-id'), event.detail === 2);
+    }
+  });
+
+  viewport.addEventListener('keydown', (event) => {
+    const target = event.target.closest('.node');
+    if (target && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      selectNode(target.getAttribute('data-id'), false);
+    }
+  });
+
+  document.getElementById('reveal').addEventListener('click', () => {
+    if (state.selected) {
+      vscode.postMessage({ type: 'select', id: state.selected });
+    }
+  });
+
+  vscode.postMessage({ type: 'ready' });
+})();
+
+  </script>
+</body>
+</html>
